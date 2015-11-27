@@ -247,6 +247,9 @@ MqttClient.prototype._setupStream = function () {
   // Echo connection errors
   parser.on('error', this.emit.bind(this, 'error'));
 
+  // many drain listeners are needed for qos 1 callbacks if the connection is intermittent
+  this.stream.setMaxListeners(1000);
+
   clearTimeout(this.connackTimer);
   this.connackTimer = setTimeout(function () {
     that._cleanUp(true);
@@ -666,7 +669,7 @@ MqttClient.prototype._handleConnack = function (packet) {
   clearTimeout(this.connackTimer);
 
   if (0 === rc) {
-    this.emit('connect');
+    this.emit('connect', packet);
   } else if (0 < rc) {
     this.emit('error',
         new Error('Connection refused: ' + errors[rc]));
@@ -888,14 +891,7 @@ function buildBuilder (mqttClient, opts) {
   opts.port = opts.port || 8883;
   opts.host = opts.hostname || opts.host || 'localhost';
 
-  /**
-   * this should be further investigated
-   * the result is opts.rejectUnauthorized = opts.rejectUnauthorized
-   * do you want to check for undefined and set it to false default ?
-   */
-  /*jshint ignore:start */
-  opts.rejectUnauthorized = !(false === opts.rejectUnauthorized);
-  /*jshint ignore:end */
+  opts.rejectUnauthorized = false !== opts.rejectUnauthorized;
 
   connection = tls.connect(opts);
   /*eslint no-use-before-define: [2, "nofunc"]*/

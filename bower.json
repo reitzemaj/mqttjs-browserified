@@ -1,6 +1,6 @@
 {
   "name": "mqttjs-browserified",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "authors": [
     "Johan Reitzema <reitzemaj@gmail.com>"
   ],
@@ -13,5 +13,12 @@
     "mqtt",
     "browserify"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "package.json",
+    "build",
+    "test"
+  ]
 }
